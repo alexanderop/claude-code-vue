@@ -2,196 +2,508 @@
 theme: '@alexop/slidev-theme-brand'
 addons:
   - '@alexop/slidev-addon-utils'
-title: Example Talk
+title: Context Engineering 101
 layout: cover
-info: |
-  ## Example Presentation
-
-  By Alexander Opalic — 2025
-
-  Learn more at [Slidev](https://sli.dev)
 ---
 
-# Example Talk
+# Context Engineering 101
 
-By Alexander Opalic
-
----
-layout: section
----
-
-# Agenda
+Getting the Best Vue Code out of Claude Code
 
 ---
-layout: two-cols
-heading: About me
+layout: image
+image: images/pastAlex.png
+backgroundSize: contain
 ---
 
-<template v-slot:default>
-<div class="flex flex-col justify-center items-center h-full">
-  <img class="w-75 rounded-full" src="https://avatars.githubusercontent.com/u/33398393?v=4" />
-  <h2 class="mt-4">Alex Opalic</h2>
-</div>
-</template>
-
-<template v-slot:right>
-<VClicks class="space-y-2 mt-10 text-xl h-full">
-
-* 🚀 7 years building with Vue
-* 💼 Developer at Otto Payments
-* 🏡 Based in Geretsried (south of Munich, Bavaria)
-* ✍️ Blogger at alexop.dev
-* 🎤 Sharing & speaking about Vue, testing & GraphQL & Ai
-
-</VClicks>
-</template>
+---
+layout: image
+image: images/projects.png
+backgroundSize: contain
+---
 
 ---
 
-# Why?
+what I learnt
 
-Slidev makes creating presentations:
-
-- **Developer-friendly** - Write slides in Markdown
-- **Themeable** - Customize with Vue components
-- **Interactive** - Add live coding demos
-- **Exportable** - PDF, PNG, or SPA
+- context engeniering
+- claude code basics
+- how to use it for vue projects
 
 ---
-layout: TwoCols
+layout: image
+image: images/context.png
+backgroundSize: contain
 ---
 
-::left::
-
-## Main Content
-
-This is your main content on the left side.
-
-You can include:
-- Lists
-- Code blocks
-- Images
-
-::right::
-
-<Callout type="info">
-
-### Pro Tip
-
-Use the TwoCols layout for side-by-side content comparisons or to highlight important information!
-
-</Callout>
 
 ---
 
-# How It Works
-
-1. **Write** - Edit `slides.md` with your content
-2. **Preview** - Run `pnpm dev` to see live changes
-3. **Style** - Customize theme and components
-4. **Export** - Generate PDF or PNG outputs
-
-<Callout type="warn">
-Remember to install dependencies first with `pnpm install`
-</Callout>
+# What is Context Engineering?
 
 ---
 layout: section
 ---
 
-# Demo Time
+# Claude Code Basics
 
 ---
 
-# Code Example
+# The Feature Stack
 
-Here's a simple Vue component:
+```mermaid
+graph TD
+    A[MCP] --> B[Core Features]
+    B --> C[Plugins]
+    C --> D[Skills]
 
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const count = ref(0)
-</script>
-
-<template>
-  <button @click="count++">
-    Count: {{ count }}
-  </button>
-</template>
+    B --> B1[CLAUDE.md]
+    B --> B2[Slash Commands]
+    B --> B3[Subagents]
+    B --> B4[Hooks]
 ```
 
 ---
 
+# MCP — Model Context Protocol
 
-<VuePlayground
-  height="450px"
-  url="https://play.vuejs.org/#eNp9kUFLwzAUx7/KM5cqzBXR0+gGKgP1oKKCl1xG99ZlpklIXuag9Lv7krK5w9it7//7v/SXthP3zo23EcVEVKH2yhEEpOhm0qjWWU/QgccV9LDytoWCq4U00tTWBII2NDBN/LJ4Qq0tfFuvlxfFlTRVORzHB/FA2Dq9IOQJoFrfzLouL/d9VfKUU2VcJNhet3aJeioFcymgZFiVR/tiJCjw61eqGW+CNWzepX0pats6pdG/OVKsJ8UEMklswXa/LzkjH3G0z+s11j8n8k3YpUyKd48B/RalODBa+AZpwPPPV9zx8wGyfdTcPgM/MFgdk+NQe4hmydpHvWz7nL+/Ms1XmO8ITdhfKommZp/7UvA/eTxz9X/d2/Fd3pOmF/0fEx+nNQ=="
-/>
+**Universal adapter for external tools**
+
+- Connect GitHub, databases, APIs, browsers
+- Each server exposes tools as slash commands
+- Install: `claude mcp add playwright npx @playwright/mcp@latest`
+- Use: `/mcp__playwright__create-test`
+
+⚠️ Each MCP server consumes context — monitor with `/context`
 
 ---
 
-# Vue Playground Props
+# CLI vs MCP Server
 
-The component supports several props for customization:
+**Sometimes a CLI is simpler than an MCP server**
 
-- **height** - Container height (default: `600px`)
-- **width** - Container width (default: `100%`)
-- **defaultTab** - Initial tab: `preview`, `script`, `template`, or `style`
-- **url** - Full playground URL (overrides defaultTab)
+| Approach | Setup | Context Cost |
+|----------|-------|--------------|
+| GitHub MCP Server | Install server, configure | High |
+| `gh` CLI + CLAUDE.md | `brew install gh` | Low |
 
-Example with custom settings:
+**Prefer CLI when:**
+- Tool has great CLI (`gh`, `docker`, `kubectl`)
+- You only need basic operations
+- Context budget is tight
 
-```vue
-<VuePlayground
-  height="500px"
-  width="90%"
-  defaultTab="script"
-/>
+**Prefer MCP when:**
+- Need structured data responses
+- Complex integrations
+- No good CLI exists
+
+---
+
+# CLAUDE.md — Project Memory
+
+**Markdown files Claude loads at startup**
+
+Hierarchy (merged top-down):
+1. Enterprise → User (`~/.claude/CLAUDE.md`)
+2. Project root (`./CLAUDE.md`)
+3. Subdirectories (`src/components/CLAUDE.md`)
+
+**Contents:** Commands, coding standards, architecture patterns
+
+---
+
+# Writing a Good CLAUDE.md
+
+**LLMs are stateless** — CLAUDE.md goes into EVERY conversation
+
+**Cover the essentials:**
+- **WHAT:** Tech stack, project structure, monorepo layout
+- **WHY:** Purpose of the project and its parts
+- **HOW:** Build, test, and verification commands
+
+**Best practices:**
+- Less is more — LLMs follow ~150 instructions max
+- Keep it short — <300 lines (ideally <60)
+- Universal content only — skip task-specific stuff
+- Progressive disclosure — point to `agent_docs/*.md`
+- Don't use Claude as a linter — use real linters
+- Don't auto-generate with `/init` — craft it carefully
+
+⚠️ Bad CLAUDE.md affects every single session
+
+---
+
+# Slash Commands
+
+**Explicit, user-triggered workflows**
+
+```
+.claude/commands/review.md
+```
+
+- `$ARGUMENTS` or `$1`, `$2` for args
+- `@file` to inline code
+- `allowed-tools:` for pre-execution scripts
+
+**Use for:** Code reviews, commits, scaffolding
+
+---
+
+# Command Structure
+
+```markdown
+---
+description: Create a git commit
+allowed-tools: Bash(git add:*), Bash(git commit:*)
+model: haiku
+---
+```
+
+| Option | Purpose |
+|--------|---------|
+| `description` | Shown in `/help` |
+| `allowed-tools` | Permitted tool access |
+| `model` | `haiku` (fast) or `sonnet` (reasoning) |
+| `argument-hint` | Expected args in autocomplete |
+
+**Bash execution:** `!git diff` runs first, output injected into prompt
+
+---
+
+# My Git Workflow
+
+```mermaid
+flowchart LR
+    Branch["/branch"] --> Code[Write Code]
+    Code --> Lint["/lint"]
+    Lint --> Test["/vitest"]
+    Test --> Push["/push"]
+    Push --> PR["/pr"]
+    PR --> CI{CI Pass?}
+    CI -- No --> Fix["/fix-pipeline"]
+    Fix --> CI
+    CI -- Yes --> Review["/review-coderabbit"]
+    Review --> Merge["/merge-to-main"]
 ```
 
 ---
 
-# Key Features
+# The Commands
 
-<div class="grid grid-cols-2 gap-4">
+| Command | Purpose | Model |
+|---------|---------|-------|
+| `/branch` | Create feature branch from main | haiku |
+| `/lint` | Auto-fix linting errors | haiku |
+| `/vitest` | Run & fix failing tests | haiku |
+| `/commit` | Conventional commit message | haiku |
+| `/push` | Stage, commit, push in one step | haiku |
+| `/fix-pipeline` | Debug CI failures via `gh` | sonnet |
+| `/pr` | Create PR with generated description | haiku |
+| `/review-coderabbit` | Address review comments | sonnet |
+| `/merge-to-main` | Squash merge & cleanup | haiku |
 
-<div>
+---
 
-## Development
-- Hot reload
-- Syntax highlighting
-- Vue components
+# Subagents
 
-</div>
+**Specialized AI with isolated context**
 
-<div>
+```markdown
+---
+name: security-auditor
+tools: Read, Grep, Bash
+model: sonnet
+---
+You are a security-focused code auditor...
+```
 
-## Production
-- Fast builds
-- PDF export
-- Static hosting
+- Prevents context pollution
+- Run in parallel
+- Each has own system prompt & tools
 
-</div>
+---
 
-</div>
+# The Problem: Context Pollution
+
+**AI defaults to implementation-first**
+
+In a single context window:
+- Test writer's analysis bleeds into implementer
+- LLM "cheats" — designs tests around planned implementation
+- Each phase drags baggage from others
+
+**Solution:** Isolated subagents for each TDD phase
+
+---
+
+# TDD with Skills + Subagents
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as TDD Skill
+    participant TW as Test Writer
+    participant I as Implementer
+    participant R as Refactorer
+
+    U->>S: "Add feature X"
+    S->>TW: Feature requirement
+    TW-->>S: ❌ Test fails
+    S->>I: Test file path
+    I-->>S: ✅ Test passes
+    S->>R: Implementation files
+    R-->>S: ✅ Refactored
+    S-->>U: 🔴→🟢→🔵 Complete
+```
+
+---
+
+# The TDD Skill (Orchestrator)
+
+`.claude/skills/tdd-integration/skill.md`
+
+**Auto-triggers on:** "implement", "add feature", "build"
+
+**Phase gates:**
+- 🔴 **RED:** Write failing test — do NOT proceed until failure confirmed
+- 🟢 **GREEN:** Minimal code to pass — do NOT proceed until test passes
+- 🔵 **REFACTOR:** Improve or skip — cycle complete
+
+**Multiple features:** Complete full cycle for EACH before starting next
+
+---
+
+# The Three Agents
+
+| Agent | Phase | Purpose |
+|-------|-------|---------|
+| `tdd-test-writer` | 🔴 RED | Write failing test |
+| `tdd-implementer` | 🟢 GREEN | Minimal code to pass |
+| `tdd-refactorer` | 🔵 REFACTOR | Improve or "no changes needed" |
+
+**Key insight:** Each agent has **isolated context**
+
+- Test writer can't see implementation plans
+- Implementer only sees the failing test
+- Refactorer starts fresh without implementation baggage
+
+---
+
+# Hooks
+
+**Automatic event-driven actions**
+
+Events: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`...
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command", "command": "pnpm lint" }]
+    }]
+  }
+}
+```
+
+**Use for:** Auto-lint, format, validation
+
+---
+
+# Notification Hooks
+
+**Problem:** Constantly checking terminal to see if Claude needs you
+
+**Solution:** `Notification` hook sends desktop alerts
+
+```json
+{
+  "hooks": {
+    "Notification": [{
+      "matcher": "permission_prompt|idle_prompt",
+      "hooks": [{
+        "type": "command",
+        "command": "npx tsx .claude/hooks/notify.ts"
+      }]
+    }]
+  }
+}
+```
+
+| Event | When |
+|-------|------|
+| `permission_prompt` | Claude needs approval |
+| `idle_prompt` | Claude is waiting for input |
+
+**Result:** Notification arrives exactly when you need to engage
+
+---
+
+# Protection Hooks
+
+**Example:** Block editing shadcn/ui components
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{
+        "type": "command",
+        "command": "npx tsx .claude/hooks/protect-shadcn.ts"
+      }]
+    }]
+  }
+}
+```
+
+**The hook:**
+- Checks if file is in `src/components/ui/`
+- Returns `permissionDecision: 'deny'`
+- Message: "Use `npx shadcn-vue@latest add` instead"
+
+**Key:** `PreToolUse` hooks can block actions before they happen
+
+---
+
+# Plugins & Skills
+
+**Plugins** — Shareable bundles of commands, hooks, skills
+
+**Skills** — Auto-activate based on task context
+
+```
+.claude/skills/my-skill/SKILL.md
+```
+
+| Feature | Triggered By | Context |
+|---------|-------------|---------|
+| Slash Commands | User | Explicit |
+| Subagents | Agent | Isolated |
+| Skills | Agent | Automatic |
+
+---
+
+# Quick Reference
+
+| Need | Use |
+|------|-----|
+| Persistent project context | `CLAUDE.md` |
+| Manual workflow | Slash Command |
+| Parallel/isolated work | Subagent |
+| Auto-enforce standards | Hook |
+| Share team config | Plugin |
+| External integrations | MCP |
+| Auto-apply expertise | Skill |
 
 ---
 layout: section
 ---
 
-# Questions?
+# Vue + Claude Code
 
 ---
 
-# Thank You!
+# The Foundation: Clean Codebase
 
-<div class="text-center mt-8">
+**AI tools read and mimic your codebase**
 
-<Callout type="info">
+✅ Clean architecture
+✅ Files < 600 lines
+✅ Good linting & formatting
+✅ Comprehensive automated tests
 
-Find the source code at [github.com/alexop](https://github.com/alexop)
+**Then customize your workflow:**
+- Slash commands for repetitive tasks
+- Subagents for specialized work
+- Skills for auto-activated expertise
 
-</Callout>
+**Example:** Vue Shadcn skill
+- Calls `llms.txt` for component docs
+- Claude knows Shadcn patterns automatically
 
-</div>
+---
+
+# My Vue Workflow
+
+```mermaid
+flowchart LR
+    subgraph Plan
+        S[Skills] --> Q[Questions]
+        Q --> P[Review Plan]
+    end
+    subgraph Build
+        P --> C[Implement]
+        C --> L[Lint + Test]
+        L --> Ch[/check]
+    end
+    subgraph Ship
+        Ch --> Pu[/push]
+        Pu --> PR[/pr]
+        PR --> CI[Pipeline]
+    end
+    subgraph Fix
+        CI --> CR[CodeRabbit]
+        CR --> FC[/coderabbit]
+        CI --> FP[/fix-pipeline]
+    end
+    subgraph QA
+        PR --> Label[QA label]
+        Label --> GHA[GitHub Action]
+        GHA --> PW[Playwright MCP]
+    end
+```
+
+---
+
+# Planning Phase
+
+**Skills auto-activate:** `brainstorm` + `frontend`
+
+1. Describe what you need
+2. Claude asks follow-up questions
+3. Get detailed plan back
+4. **Review plan carefully** before approving
+
+Tests + lint run automatically during implementation
+
+---
+
+# Review & QA Phase
+
+| Step | Action |
+|------|--------|
+| `/check` | Subagent reviews code |
+| `/push` → `/pr` | Commit + create PR |
+| Pipeline | CI runs tests |
+| CodeRabbit | Automated review |
+| `/coderabbit` | Fix valid findings |
+| `/fix-pipeline` | Fix CI issues |
+| **QA label** | Triggers GitHub Action |
+
+**GitHub Action + Playwright MCP**
+→ Claude tests app like a QA dev would
+
+---
+layout: section
+---
+
+# Spec-Driven Development
+
+---
+
+# Write Clear Acceptance Criteria
+
+---
+
+# Good vs Bad Specs
+
+---
+
+# The Workflow
+
+---
+layout: end
+---
+
+# Key Takeaways
