@@ -2,7 +2,7 @@
 theme: '@alexop/slidev-theme-brand'
 addons:
   - '@alexop/slidev-addon-utils'
-title: Context Engineering 101
+image: images/slideTitle.png
 layout: cover
 ---
 
@@ -26,20 +26,86 @@ backgroundSize: contain
 
 what I learnt
 
-- context engeniering
+- vue best practices
 - claude code basics
-- how to use it for vue projects
+- how to combine them
 
 ---
-layout: image
-image: images/context.png
-backgroundSize: contain
+layout: section
 ---
 
+# Vue Best Practices
 
 ---
 
-# What is Context Engineering?
+# Dumb Components & Composables
+
+**Keep components presentational**
+
+<VClicks>
+
+- Components handle **UI only** — no business logic
+- Extract logic into **composables** (`use*.ts`)
+- Easy to test, clean structure, modular
+
+</VClicks>
+
+<v-click>
+
+```typescript
+// ❌ Logic in component
+const handleSubmit = async () => {
+  const valid = validateForm(form)
+  if (valid) await api.submit(form)
+}
+
+// ✅ Logic in composable
+const { submit, isValid } = useFormSubmit(form)
+```
+
+</v-click>
+
+---
+
+# Testing Strategy
+
+**Focus on integration tests**
+
+| Type | Purpose | Tools |
+|------|---------|-------|
+| **Integration** | Test real user flows | Vitest + Vue Test Utils |
+| **a11y** | Automated accessibility | vitest-axe |
+| **Visual regression** | Catch UI changes | Playwright screenshots |
+
+<v-click>
+
+**Why integration over unit?**
+- Test components as users experience them
+- Less brittle than mocking everything
+- Catch real bugs, not implementation details
+
+</v-click>
+
+---
+
+# Clean Codebase Foundation
+
+**AI tools read and mimic your codebase**
+
+<VClicks>
+
+- Files < 600 lines
+- Good linting & formatting
+- Comprehensive automated tests
+- Consistent patterns across the project
+
+</VClicks>
+
+<v-click>
+
+**Why this matters:** Claude learns from your code. Clean patterns in → clean code out.
+
+</v-click>
 
 ---
 layout: section
@@ -404,23 +470,23 @@ layout: section
 
 ---
 
-# The Foundation: Clean Codebase
+# Customize Your Workflow
 
-**AI tools read and mimic your codebase**
+**With a clean codebase, add Vue-specific tooling:**
 
-✅ Clean architecture
-✅ Files < 600 lines
-✅ Good linting & formatting
-✅ Comprehensive automated tests
+| Tool | Purpose |
+|------|---------|
+| **Slash commands** | Repetitive tasks (`/lint`, `/vitest`) |
+| **Subagents** | Specialized work (code review) |
+| **Skills** | Auto-activated expertise |
 
-**Then customize your workflow:**
-- Slash commands for repetitive tasks
-- Subagents for specialized work
-- Skills for auto-activated expertise
+<v-click>
 
 **Example:** Vue Shadcn skill
-- Calls `llms.txt` for component docs
+- Fetches `llms.txt` for component docs
 - Claude knows Shadcn patterns automatically
+
+</v-click>
 
 ---
 
@@ -435,20 +501,20 @@ flowchart LR
     subgraph Build
         P --> C[Implement]
         C --> L[Lint + Test]
-        L --> Ch[/check]
+        L --> Ch["/check"]
     end
     subgraph Ship
-        Ch --> Pu[/push]
-        Pu --> PR[/pr]
-        PR --> CI[Pipeline]
+        Ch --> Pu["/push"]
+        Pu --> PRs["/pr"]
+        PRs --> CI[Pipeline]
     end
     subgraph Fix
         CI --> CR[CodeRabbit]
-        CR --> FC[/coderabbit]
-        CI --> FP[/fix-pipeline]
+        CR --> FC["/coderabbit"]
+        CI --> FP["/fix-pipeline"]
     end
     subgraph QA
-        PR --> Label[QA label]
+        PRs --> Label[QA label]
         Label --> GHA[GitHub Action]
         GHA --> PW[Playwright MCP]
     end
@@ -494,16 +560,114 @@ layout: section
 
 # Write Clear Acceptance Criteria
 
+**Structure every feature request:**
+
+<VClicks>
+
+- **Given** — Initial state / preconditions
+- **When** — User action / trigger
+- **Then** — Expected outcome / verification
+
+</VClicks>
+
+<v-click>
+
+```markdown
+Given: User is on the dashboard with no tasks
+When: User clicks "Add Task" and enters "Buy milk"
+Then: Task appears in the list with unchecked status
+```
+
+</v-click>
+
 ---
 
 # Good vs Bad Specs
 
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+### ❌ Vague
+
+```markdown
+Add a login page
+```
+
+```markdown
+Make it look nice
+```
+
+```markdown
+Fix the bug
+```
+
+</div>
+
+<div>
+
+### ✅ Specific
+
+```markdown
+Given: Unauthenticated user
+When: Submit valid credentials
+Then: Redirect to /dashboard
+      with session cookie set
+```
+
+```markdown
+Match Figma design #42
+Use primary brand colors
+8px border-radius on inputs
+```
+
+```markdown
+Given: Cart with 2 items
+When: Remove item #1
+Then: Total updates immediately
+      Item count shows "1"
+```
+
+</div>
+
+</div>
+
 ---
 
 # The Workflow
+
+```mermaid
+flowchart LR
+    subgraph Define
+        S[Write Spec] --> R[Review with Claude]
+    end
+    subgraph Build
+        R --> I[Implement]
+        I --> T[Test Against Spec]
+    end
+    subgraph Verify
+        T --> P{Passes?}
+        P -- No --> I
+        P -- Yes --> D[Done]
+    end
+```
+
+<v-click>
+
+**The spec is your contract** — Claude can verify its own work
+
+</v-click>
 
 ---
 layout: end
 ---
 
 # Key Takeaways
+
+<VClicks>
+
+- **Vue foundation** — Dumb components, composables, good tests
+- **Claude Code** — CLAUDE.md, commands, hooks, subagents, skills
+- **Combine them** — Spec-driven, automate the boring, isolate context
+
+</VClicks>
