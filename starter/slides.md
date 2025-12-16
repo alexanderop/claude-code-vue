@@ -24,650 +24,454 @@ backgroundSize: contain
 
 ---
 
-what I learnt
+# What I wanted to share today 
 
-- vue best practices
-- claude code basics
-- how to combine them
-
----
-layout: section
----
-
-# Vue Best Practices
+- Vue best practices
+- Claude Code basics
+- How to combine them
 
 ---
+layout: image
+image: images/writeGoodStuff.png
+backgroundSize: contain
+---
 
-# Dumb Components & Composables
+---
+layout: image
+image: images/ciExample.png
+backgroundSize: contain
+---
 
-**Keep components presentational**
+---
+layout: image
+image: images/claudeCodeSearch.png
+backgroundSize: contain
+---
 
-<VClicks>
-
-- Components handle **UI only** — no business logic
-- Extract logic into **composables** (`use*.ts`)
-- Easy to test, clean structure, modular
-
-</VClicks>
-
-<v-click>
-
-```typescript
-// ❌ Logic in component
-const handleSubmit = async () => {
-  const valid = validateForm(form)
-  if (valid) await api.submit(form)
-}
-
-// ✅ Logic in composable
-const { submit, isValid } = useFormSubmit(form)
-```
-
-</v-click>
+---
+layout: image
+image: images/image.png
+backgroundSize: contain
+---
 
 ---
 
-# Testing Strategy
+Now Claude code basics
 
-**Focus on integration tests**
+---
+layout: image
+image: images/context.png
+backgroundSize: contain
+---
 
-| Type | Purpose | Tools |
-|------|---------|-------|
-| **Integration** | Test real user flows | Vitest + Vue Test Utils |
-| **a11y** | Automated accessibility | vitest-axe |
-| **Visual regression** | Catch UI changes | Playwright screenshots |
-
-<v-click>
-
-**Why integration over unit?**
-- Test components as users experience them
-- Less brittle than mocking everything
-- Catch real bugs, not implementation details
-
-</v-click>
+---
+layout: image
+image: images/claudeMd.png
+backgroundSize: contain
+---
 
 ---
 
-# Clean Codebase Foundation
+```markdown
+# CLAUDE.md
 
-**AI tools read and mimic your codebase**
+AI agent guidance for Vue 3 PWA workout tracker.
 
-<VClicks>
+## Project
 
-- Files < 600 lines
-- Good linting & formatting
-- Comprehensive automated tests
-- Consistent patterns across the project
+**Stack**: Vue 3.5+, TypeScript (strict), Vite, Pinia, Dexie (IndexedDB), Vitest, shadcn-vue, Tailwind
 
-</VClicks>
+**Architecture**: Bulletproof feature-based. ESLint enforces `Views → Features → Shared` boundaries.
 
-<v-click>
+## Commands
 
-**Why this matters:** Claude learns from your code. Clean patterns in → clean code out.
+pnpm dev          # Development server
+pnpm test         # Run tests
+pnpm lint         # Fix lint errors (enforces ALL code style rules)
+pnpm type-check   # TypeScript checking
+pnpm build        # Production build
+pnpm knip         # Find unused exports
 
-</v-click>
+## Before Committing
 
----
-layout: section
----
+pnpm type-check && pnpm lint && pnpm test
 
-# Claude Code Basics
-
----
-
-# The Feature Stack
-
-```mermaid
-graph TD
-    A[MCP] --> B[Core Features]
-    B --> C[Plugins]
-    C --> D[Skills]
-
-    B --> B1[CLAUDE.md]
-    B --> B2[Slash Commands]
-    B --> B3[Subagents]
-    B --> B4[Hooks]
+Conventional Commits with scope: `feat(workout): add rest timer`
 ```
 
 ---
 
-# MCP — Model Context Protocol
+```markdown
+## Directory Map
 
-**Universal adapter for external tools**
+- `src/features/` - [Feature modules](src/features/CLAUDE.md) (workout, exercises, templates, benchmarks, settings, timers)
+- `src/__tests__/` - [Testing patterns](src/__tests__/CLAUDE.md)
+- `src/db/` - [Database/repositories](src/db/CLAUDE.md)
+- `src/composables/` - Shared reactive logic (timers, dialogs, search)
+- `src/views/` - Route-level pages
+- `src/components/ui/` - shadcn-vue primitives (**do not edit**)
 
-- Connect GitHub, databases, APIs, browsers
-- Each server exposes tools as slash commands
-- Install: `claude mcp add playwright npx @playwright/mcp@latest`
-- Use: `/mcp__playwright__create-test`
+## Vue Pattern (No ESLint Rule)
 
-⚠️ Each MCP server consumes context — monitor with `/context`
+Use `defineModel` for two-way binding: `const open = defineModel<boolean>('open')`
 
----
+## Available Tools
 
-# CLI vs MCP Server
+`gh` (GitHub CLI), `tree`, `rg` (ripgrep) are installed.
 
-**Sometimes a CLI is simpler than an MCP server**
+## Quick Find
 
-| Approach | Setup | Context Cost |
-|----------|-------|--------------|
-| GitHub MCP Server | Install server, configure | High |
-| `gh` CLI + CLAUDE.md | `brew install gh` | Low |
-
-**Prefer CLI when:**
-- Tool has great CLI (`gh`, `docker`, `kubectl`)
-- You only need basic operations
-- Context budget is tight
-
-**Prefer MCP when:**
-- Need structured data responses
-- Complex integrations
-- No good CLI exists
-
----
-
-# CLAUDE.md — Project Memory
-
-**Markdown files Claude loads at startup**
-
-Hierarchy (merged top-down):
-1. Enterprise → User (`~/.claude/CLAUDE.md`)
-2. Project root (`./CLAUDE.md`)
-3. Subdirectories (`src/components/CLAUDE.md`)
-
-**Contents:** Commands, coding standards, architecture patterns
-
----
-
-# Writing a Good CLAUDE.md
-
-**LLMs are stateless** — CLAUDE.md goes into EVERY conversation
-
-**Cover the essentials:**
-- **WHAT:** Tech stack, project structure, monorepo layout
-- **WHY:** Purpose of the project and its parts
-- **HOW:** Build, test, and verification commands
-
-**Best practices:**
-- Less is more — LLMs follow ~150 instructions max
-- Keep it short — <300 lines (ideally <60)
-- Universal content only — skip task-specific stuff
-- Progressive disclosure — point to `agent_docs/*.md`
-- Don't use Claude as a linter — use real linters
-- Don't auto-generate with `/init` — craft it carefully
-
-⚠️ Bad CLAUDE.md affects every single session
-
----
-
-# Slash Commands
-
-**Explicit, user-triggered workflows**
-
-```
-.claude/commands/review.md
+rg -n "export (const|function) use" src/composables src/features  # Composables
+rg -n "RouteNames\." src/router                                    # Routes
+tree src/features -L 2                                             # Directory structure
 ```
 
-- `$ARGUMENTS` or `$1`, `$2` for args
-- `@file` to inline code
-- `allowed-tools:` for pre-execution scripts
+---
 
-**Use for:** Code reviews, commits, scaffolding
+```markdown
+# Testing Guide
+
+AI agent guidance for testing in this Vue 3 PWA.
+
+## Stack
+
+**Framework**: Vitest 4 with **Playwright browser mode** (NOT jsdom)
+
+**Libraries**: vitest-browser-vue, Vitest Browser locators (`page.getBy*`), fake-indexeddb
+
+## Test Directories
+
+| Directory | Purpose |
+|-----------|---------|
+| `composables/` | Direct composable unit tests |
+| `integration/` | Full user flows with router + Pinia |
+| `factories/` | Test data builders |
+| `helpers/` | `createTestApp`, `withSetup`, page objects |
+```
 
 ---
 
-# Command Structure
+```markdown
+## Core Patterns
+
+### Reset Database Between Tests
+
+import { resetDatabase } from '@/__tests__/setup'
+
+beforeEach(async () => {
+  await resetDatabase()
+})
+```
+---
+
+
+```markdown
+### Test Composables Directly (No Lifecycle)
+
+import { useRestTimer } from '@/composables/timers/useRestTimer'
+
+it('starts timer', () => {
+  const { start, isRunning } = useRestTimer()
+  start(60)
+  expect(isRunning.value).toBe(true)
+})
+
+### Use `withSetup()` for Lifecycle Composables
+
+import { withSetup } from '@/__tests__/helpers/withSetup'
+
+it('runs onMounted', () => {
+  const [result, app] = withSetup(() => useMyComposable())
+  expect(result.initialized.value).toBe(true)
+  app.unmount()
+})
+```
+
+---
+layout: image
+image: images/goodMdBlog.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/slashFu.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/slashCommand.png
+backgroundSize: contain
+---
+
+---
+
+# Custom Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/lint` | Run ESLint and fix any issues found |
+| `/type-check` | Run TypeScript type checking and fix errors |
+| `/check` | Review current changes with parallel subagents (multi-agent code review) |
+| `/pr` | Open a pull request from the current branch (with Gherkin test plans) |
+| `/push` | Commit staged changes and push to remote |
+| `/fix-pipeline` | Check GitHub pipeline status and plan fixes if failing |
+| `/review-coderabbit` | Review CodeRabbit comments on current PR and implement valid fixes |
+| `/review-components` | Review changed Vue components for readability using design patterns |
+| `/refactor-component` | Automatically refactor large Vue components using design patterns |
+| `/research` | Research a problem using web search, documentation, and codebase exploration |
+| `/shade` | List all available shadcn UI components in the project |
+| `/create-command` | Generate a new slash command from a natural language description |
+
+
+---
+layout: image
+image: images/codeRabi.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/codeRabbit.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/subagents.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/check.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/report.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/ultrahink.png
+backgroundSize: contain
+---
+
+---
+
+We can stack Slash commands that can use subagents
+
+AGENTIC ENGINEERING !!!!
+
+---
+layout: image
+image: images/notCorrect.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/hooks.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/stop.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/skills.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/searchDocs.png
+backgroundSize: contain
+---
+
+---
+
+```markdown
+# null
+
+# Claude Code Documentation Map
+
+This is a comprehensive map of all Claude Code documentation pages with their headings, designed for easy navigation by LLMs.
+
+> **Note:** This file is auto-generated by GitHub Actions. Do not edit manually.
+> Last updated: 2025-11-06 00:10:13 UTC
+
+## Document Structure
+
+This map uses a hierarchical structure:
+
+* **##** marks documentation groups (e.g., 'Getting started')
+* **###** marks individual documentation pages
+* **Nested bullets** show the heading structure within each page
+* Each page title links to the full documentation
+
+## Getting started
+
+### [overview](https://code.claude.com/docs/en/overview.md)
+
+* Get started in 30 seconds
+* What Claude Code does for you
+* Why developers love Claude Code
+* Next steps
+* Additional resources
+
+### [quickstart](https://code.claude.com/docs/en/quickstart.md)
+```
+
+---
+layout: image
+image: images/vitestSkill.png
+backgroundSize: contain
+---
+
+---
+
+Most vue sites have a llms.txt
+
+```markdown
+# Vitest
+
+> Next Generation Testing Framework
+
+A Vite-native testing framework. It's fast!
+
+## Table of Contents
+
+### Config Reference
+
+- [Configuring Vitest](/config.md)
+- [include | Config](/config/include.md)
+- [exclude | Config](/config/exclude.md)
+- [includeSource | Config](/config/include-source.md)
+- [name | Config](/config/name.md)
+- [server | Config](/config/server.md)
+- [deps | Config](/config/deps.md)
+- [runner | Config](/config/runner.md)
+- [benchmark | Config](/config/benchmark.md)
+- [alias | Config](/config/alias.md)
+- [globals | Config](/config/globals.md)
+- [environment | Config](/config/environment.md)
+- [environmentOptions | Config](/config/environmentoptions.md)
+- [watch | Config](/config/watch.md)
+- [watchTriggerPatterns | Config](/config/watchtriggerpatterns.md)
+- [root | Config](/config/root.md)
+- [dir | Config](/config/dir.md)
+- [reporters | Config](/config/reporters.md)
+```
+
+---
 
 ```markdown
 ---
-description: Create a git commit
-allowed-tools: Bash(git add:*), Bash(git commit:*)
-model: haiku
----
-```
-
-| Option | Purpose |
-|--------|---------|
-| `description` | Shown in `/help` |
-| `allowed-tools` | Permitted tool access |
-| `model` | `haiku` (fast) or `sonnet` (reasoning) |
-| `argument-hint` | Expected args in autocomplete |
-
-**Bash execution:** `!git diff` runs first, output injected into prompt
-
+name: shadcn-vue-docs
+description: Fetch and answer questions about shadcn-vue components and documentation. Use when asked about shadcn-vue usage, component APIs, installation, theming, or any Vue shadcn question. Triggers include "how do I use shadcn", "shadcn component", "shadcn-vue docs", "what shadcn components are available", or any question about vue-shadcn library usage and configuration.
 ---
 
-# My Git Workflow
+# shadcn-vue Documentation Skill
 
-```mermaid
-flowchart LR
-    Branch["/branch"] --> Code[Write Code]
-    Code --> Lint["/lint"]
-    Lint --> Test["/vitest"]
-    Test --> Push["/push"]
-    Push --> PR["/pr"]
-    PR --> CI{CI Pass?}
-    CI -- No --> Fix["/fix-pipeline"]
-    Fix --> CI
-    CI -- Yes --> Review["/review-coderabbit"]
-    Review --> Merge["/merge-to-main"]
+Fetch official shadcn-vue documentation to answer user questions accurately.
+
+## Workflow
+
+1. **Fetch the documentation index** from `https://www.shadcn-vue.com/llms.txt`
+2. **Identify relevant pages** based on the user's question
+3. **Fetch specific documentation pages** to get detailed information
+4. **Provide accurate answers** with code examples from the official docs
 ```
 
 ---
 
-# The Commands
+This is much better than MCPs. MCPs blow up your context and you can't customize them.
 
-| Command | Purpose | Model |
-|---------|---------|-------|
-| `/branch` | Create feature branch from main | haiku |
-| `/lint` | Auto-fix linting errors | haiku |
-| `/vitest` | Run & fix failing tests | haiku |
-| `/commit` | Conventional commit message | haiku |
-| `/push` | Stage, commit, push in one step | haiku |
-| `/fix-pipeline` | Debug CI failures via `gh` | sonnet |
-| `/pr` | Create PR with generated description | haiku |
-| `/review-coderabbit` | Address review comments | sonnet |
-| `/merge-to-main` | Squash merge & cleanup | haiku |
+Instead of using the GitHub MCP server, just install `gh` and tell Claude Code to use it.
+
+---
+layout: image
+image: images/brainStorm.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/askQuestions.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/details.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/design.png
+backgroundSize: contain
+---
 
 ---
 
-# Subagents
+Here is Claude's plan:
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+ Weekly Workout Goal Feature
 
-**Specialized AI with isolated context**
+ Summary
 
-```markdown
----
-name: security-auditor
-tools: Read, Grep, Bash
-model: sonnet
----
-You are a security-focused code auditor...
-```
+ Add a weekly goal card to the home view where users can set a target (number of workouts OR total duration) and see their
+ progress via a circular ring with contextual motivational messages.
 
-- Prevents context pollution
-- Run in parallel
-- Each has own system prompt & tools
+ User Decisions
 
----
-
-# The Problem: Context Pollution
-
-**AI defaults to implementation-first**
-
-In a single context window:
-- Test writer's analysis bleeds into implementer
-- LLM "cheats" — designs tests around planned implementation
-- Each phase drags baggage from others
-
-**Solution:** Isolated subagents for each TDD phase
+ - Goal metric: User chooses between workout count OR duration (hours/minutes)
+ - Motivation: Progress visual + contextual text messages
+ - Visual style: Circular progress ring (minimal/subtle, matches existing UI)
+ - Configuration: Inline on home view (tap card to edit)
+ - Data storage: Single user setting (not separate table)
 
 ---
 
-# TDD with Skills + Subagents
+Tips to Get Started
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant S as TDD Skill
-    participant TW as Test Writer
-    participant I as Implementer
-    participant R as Refactorer
+<v-clicks>
 
-    U->>S: "Add feature X"
-    S->>TW: Feature requirement
-    TW-->>S: ❌ Test fails
-    S->>I: Test file path
-    I-->>S: ✅ Test passes
-    S->>R: Implementation files
-    R-->>S: ✅ Refactored
-    S-->>U: 🔴→🟢→🔵 Complete
-```
+1. Write a good claude.md file
+2. Automate what you can with slash commands (refactoring, git)
+3. Think if subagents can make sense (code reviews)
+4. Add hooks (files Claude should not read, e.g., .env)
+5. Customize your own workflow with skills (brainstorm, git-worktree, frontend-skill)
+6. Work together as a team—share what works and try to force yourself to use these tools
+7. Automate tasks—ship faster and better code
+
+</v-clicks>
 
 ---
-
-# The TDD Skill (Orchestrator)
-
-`.claude/skills/tdd-integration/skill.md`
-
-**Auto-triggers on:** "implement", "add feature", "build"
-
-**Phase gates:**
-- 🔴 **RED:** Write failing test — do NOT proceed until failure confirmed
-- 🟢 **GREEN:** Minimal code to pass — do NOT proceed until test passes
-- 🔵 **REFACTOR:** Improve or skip — cycle complete
-
-**Multiple features:** Complete full cycle for EACH before starting next
-
+layout: image
+image: images/qaEngenier.png
+backgroundSize: contain
 ---
 
-# The Three Agents
-
-| Agent | Phase | Purpose |
-|-------|-------|---------|
-| `tdd-test-writer` | 🔴 RED | Write failing test |
-| `tdd-implementer` | 🟢 GREEN | Minimal code to pass |
-| `tdd-refactorer` | 🔵 REFACTOR | Improve or "no changes needed" |
-
-**Key insight:** Each agent has **isolated context**
-
-- Test writer can't see implementation plans
-- Implementer only sees the failing test
-- Refactorer starts fresh without implementation baggage
-
+---
+layout: image
+image: images/aiTags.png
+backgroundSize: contain
 ---
 
-# Hooks
 
-**Automatic event-driven actions**
 
-Events: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`...
 
-```json
-{
-  "hooks": {
-    "PostToolUse": [{
-      "matcher": "Edit|Write",
-      "hooks": [{ "type": "command", "command": "pnpm lint" }]
-    }]
-  }
-}
-```
 
-**Use for:** Auto-lint, format, validation
 
----
 
-# Notification Hooks
-
-**Problem:** Constantly checking terminal to see if Claude needs you
-
-**Solution:** `Notification` hook sends desktop alerts
-
-```json
-{
-  "hooks": {
-    "Notification": [{
-      "matcher": "permission_prompt|idle_prompt",
-      "hooks": [{
-        "type": "command",
-        "command": "npx tsx .claude/hooks/notify.ts"
-      }]
-    }]
-  }
-}
-```
-
-| Event | When |
-|-------|------|
-| `permission_prompt` | Claude needs approval |
-| `idle_prompt` | Claude is waiting for input |
-
-**Result:** Notification arrives exactly when you need to engage
-
----
-
-# Protection Hooks
-
-**Example:** Block editing shadcn/ui components
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "Edit|Write",
-      "hooks": [{
-        "type": "command",
-        "command": "npx tsx .claude/hooks/protect-shadcn.ts"
-      }]
-    }]
-  }
-}
-```
-
-**The hook:**
-- Checks if file is in `src/components/ui/`
-- Returns `permissionDecision: 'deny'`
-- Message: "Use `npx shadcn-vue@latest add` instead"
-
-**Key:** `PreToolUse` hooks can block actions before they happen
-
----
-
-# Plugins & Skills
-
-**Plugins** — Shareable bundles of commands, hooks, skills
-
-**Skills** — Auto-activate based on task context
-
-```
-.claude/skills/my-skill/SKILL.md
-```
-
-| Feature | Triggered By | Context |
-|---------|-------------|---------|
-| Slash Commands | User | Explicit |
-| Subagents | Agent | Isolated |
-| Skills | Agent | Automatic |
-
----
-
-# Quick Reference
-
-| Need | Use |
-|------|-----|
-| Persistent project context | `CLAUDE.md` |
-| Manual workflow | Slash Command |
-| Parallel/isolated work | Subagent |
-| Auto-enforce standards | Hook |
-| Share team config | Plugin |
-| External integrations | MCP |
-| Auto-apply expertise | Skill |
-
----
-layout: section
----
-
-# Vue + Claude Code
-
----
-
-# Customize Your Workflow
-
-**With a clean codebase, add Vue-specific tooling:**
-
-| Tool | Purpose |
-|------|---------|
-| **Slash commands** | Repetitive tasks (`/lint`, `/vitest`) |
-| **Subagents** | Specialized work (code review) |
-| **Skills** | Auto-activated expertise |
-
-<v-click>
-
-**Example:** Vue Shadcn skill
-- Fetches `llms.txt` for component docs
-- Claude knows Shadcn patterns automatically
-
-</v-click>
-
----
-
-# My Vue Workflow
-
-```mermaid
-flowchart LR
-    subgraph Plan
-        S[Skills] --> Q[Questions]
-        Q --> P[Review Plan]
-    end
-    subgraph Build
-        P --> C[Implement]
-        C --> L[Lint + Test]
-        L --> Ch["/check"]
-    end
-    subgraph Ship
-        Ch --> Pu["/push"]
-        Pu --> PRs["/pr"]
-        PRs --> CI[Pipeline]
-    end
-    subgraph Fix
-        CI --> CR[CodeRabbit]
-        CR --> FC["/coderabbit"]
-        CI --> FP["/fix-pipeline"]
-    end
-    subgraph QA
-        PRs --> Label[QA label]
-        Label --> GHA[GitHub Action]
-        GHA --> PW[Playwright MCP]
-    end
-```
-
----
-
-# Planning Phase
-
-**Skills auto-activate:** `brainstorm` + `frontend`
-
-1. Describe what you need
-2. Claude asks follow-up questions
-3. Get detailed plan back
-4. **Review plan carefully** before approving
-
-Tests + lint run automatically during implementation
-
----
-
-# Review & QA Phase
-
-| Step | Action |
-|------|--------|
-| `/check` | Subagent reviews code |
-| `/push` → `/pr` | Commit + create PR |
-| Pipeline | CI runs tests |
-| CodeRabbit | Automated review |
-| `/coderabbit` | Fix valid findings |
-| `/fix-pipeline` | Fix CI issues |
-| **QA label** | Triggers GitHub Action |
-
-**GitHub Action + Playwright MCP**
-→ Claude tests app like a QA dev would
-
----
-layout: section
----
-
-# Spec-Driven Development
-
----
-
-# Write Clear Acceptance Criteria
-
-**Structure every feature request:**
-
-<VClicks>
-
-- **Given** — Initial state / preconditions
-- **When** — User action / trigger
-- **Then** — Expected outcome / verification
-
-</VClicks>
-
-<v-click>
-
-```markdown
-Given: User is on the dashboard with no tasks
-When: User clicks "Add Task" and enters "Buy milk"
-Then: Task appears in the list with unchecked status
-```
-
-</v-click>
-
----
-
-# Good vs Bad Specs
-
-<div class="grid grid-cols-2 gap-8">
-
-<div>
-
-### ❌ Vague
-
-```markdown
-Add a login page
-```
-
-```markdown
-Make it look nice
-```
-
-```markdown
-Fix the bug
-```
-
-</div>
-
-<div>
-
-### ✅ Specific
-
-```markdown
-Given: Unauthenticated user
-When: Submit valid credentials
-Then: Redirect to /dashboard
-      with session cookie set
-```
-
-```markdown
-Match Figma design #42
-Use primary brand colors
-8px border-radius on inputs
-```
-
-```markdown
-Given: Cart with 2 items
-When: Remove item #1
-Then: Total updates immediately
-      Item count shows "1"
-```
-
-</div>
-
-</div>
-
----
-
-# The Workflow
-
-```mermaid
-flowchart LR
-    subgraph Define
-        S[Write Spec] --> R[Review with Claude]
-    end
-    subgraph Build
-        R --> I[Implement]
-        I --> T[Test Against Spec]
-    end
-    subgraph Verify
-        T --> P{Passes?}
-        P -- No --> I
-        P -- Yes --> D[Done]
-    end
-```
-
-<v-click>
-
-**The spec is your contract** — Claude can verify its own work
-
-</v-click>
-
----
-layout: end
----
-
-# Key Takeaways
-
-<VClicks>
-
-- **Vue foundation** — Dumb components, composables, good tests
-- **Claude Code** — CLAUDE.md, commands, hooks, subagents, skills
-- **Combine them** — Spec-driven, automate the boring, isolate context
-
-</VClicks>
