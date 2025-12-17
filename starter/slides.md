@@ -72,6 +72,22 @@ backgroundSize: contain
 
 ---
 
+```shell
+📂 my-vue-app
+├── 📝 CLAUDE.md          # Project-wide conventions, tech stack, build commands
+└── 📂 src
+    ├── 📂 components
+    │   ├── 📝 CLAUDE.md  # Component patterns, naming conventions, prop types
+    │   ├── 🧩 Button.vue
+    │   └── 🧩 Card.vue
+    └── 📂 pages
+        ├── 📝 CLAUDE.md  # Routing patterns, page structure, data fetching
+        ├── 📄 Home.vue
+        └── 📄 About.vue
+```
+
+---
+
 ```markdown
 # CLAUDE.md
 
@@ -244,6 +260,47 @@ backgroundSize: contain
 ---
 
 ---
+
+```markdown
+---
+name: debugger
+description: Debugging specialist for errors, test failures, and unexpected behavior. Use proactively when encountering any issues.
+tools: Read, Edit, Bash, Grep, Glob
+---
+
+You are an expert debugger specializing in root cause analysis.
+
+When invoked:
+1. Capture error message and stack trace
+2. Identify reproduction steps
+3. Isolate the failure location
+4. Implement minimal fix
+5. Verify solution works
+
+Debugging process:
+- Analyze error messages and logs
+- Check recent code changes
+- Form and test hypotheses
+- Add strategic debug logging
+- Inspect variable states
+
+For each issue, provide:
+- Root cause explanation
+- Evidence supporting the diagnosis
+- Specific code fix
+- Testing approach
+- Prevention recommendations
+
+Focus on fixing the underlying issue, not the symptoms.
+```
+
+---
+layout: image
+image: images/allTools.png
+backgroundSize: contain
+---
+
+---
 layout: image
 image: images/research.png
 backgroundSize: contain
@@ -383,7 +440,10 @@ A Vite-native testing framework. It's fast!
 ```markdown
 ---
 name: shadcn-vue-docs
-description: Fetch and answer questions about shadcn-vue components and documentation. Use when asked about shadcn-vue usage, component APIs, installation, theming, or any Vue shadcn question. Triggers include "how do I use shadcn", "shadcn component", "shadcn-vue docs", "what shadcn components are available", or any question about vue-shadcn library usage and configuration.
+description: Fetch and answer questions about shadcn-vue components and documentation. 
+Use when asked about shadcn-vue usage, component APIs, installation, theming, or any Vue shadcn question. 
+Triggers include "how do I use shadcn", "shadcn component", "shadcn-vue docs", "what shadcn components are available",
+or any question about vue-shadcn library usage and configuration.
 ---
 
 # shadcn-vue Documentation Skill
@@ -458,8 +518,8 @@ Tips to Get Started
 3. Think if subagents can make sense (code reviews)
 4. Add hooks (files Claude should not read, e.g., .env)
 5. Customize your own workflow with skills (brainstorm, git-worktree, frontend-skill)
-6. Work together as a team—share what works and try to force yourself to use these tools
-7. Automate tasks—ship faster and better code
+6. Work together as a team share what works and try to force yourself to use these tools
+7. Automate tasks ship faster and better code
 
 </v-clicks>
 
@@ -474,6 +534,32 @@ layout: image
 image: images/qaReport.png
 backgroundSize: contain
 ---
+
+---
+
+```
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request with a focus on:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - Security implications
+            - Performance considerations
+
+            Note: The PR branch is already checked out in the current working directory.
+
+            Use `gh pr comment` for top-level feedback.
+            Use `mcp__github_inline_comment__create_inline_comment` to highlight specific code issues.
+            Only post GitHub comments - don't submit review text as messages.
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+```
 
 ---
 layout: image
