@@ -245,6 +245,12 @@ backgroundSize: contain
 
 ---
 layout: image
+image: images/research.png
+backgroundSize: contain
+---
+
+---
+layout: image
 image: images/check.png
 backgroundSize: contain
 ---
@@ -460,6 +466,12 @@ Tips to Get Started
 ---
 layout: image
 image: images/qaEngenier.png
+backgroundSize: contain
+---
+
+---
+layout: image
+image: images/qaReport.png
 backgroundSize: contain
 ---
 
